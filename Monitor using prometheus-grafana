@@ -1,0 +1,63 @@
+1. Install node exporter on validator node
+- Run command to download and install 
+#wget -O install_exporters.sh https://raw.githubusercontent.com/kj89/cosmos_node_monitoring/master/install_exporters.sh && chmod +x install_exporters.sh && ./install_exporters.sh
+- Configure:
+bond_denom: aISLM
+bench_prefix: haqq
+rpc_port: 26657
+grpc_port: 9090
+- Enable prometheus:
+#sed -i -e "s/prometheus = false/prometheus = true/" $HOME/.sei/config/config.toml
+
+2. Install monitoring on other machine
+- Run command to download and install monitoring (docker-compose)
+#wget -O install_monitoring.sh https://raw.githubusercontent.com/kj89/cosmos_node_monitoring/master/install_monitoring.sh && chmod +x install_monitoring.sh && ./install_monitoring.sh
+- Configure for telegram information
+#cp $HOME/cosmos_node_monitoring/config/.env.example $HOME/cosmos_node_monitoring/config/.env
+#nano $HOME/cosmos_node_monitoring/config/.env
+TELEGRAM_ADMIN = id_of_telegram_user
+TELEGRAM_TOKEN=token of new bot
+
+#echo "export $(xargs < $HOME/cosmos_node_monitoring/config/.env)" > $HOME/.bash_profile
+#source $HOME/.bash_profile
+- Set information for validator node into docker configuration
+
+#VALIDATOR_IP=NODE_IP    
+#VALIDATOR_ADDR=VALIDATOR_ADDRESS  
+#WALLET_ADDRESS=WALLER_ADDRESS  
+#PROJECT_NAME=PROJECT_NAME  #haqq
+
+#$HOME/cosmos_node_monitoring/add_validator.sh $VALIDATOR_IP $VALIDATOR_ADDR $WALLET_ADDRESS $PROJECT_NAME
+Start docker-compose
+#cd $HOME/cosmos_node_monitoring
+#sudo docker-compose up -d
+
+3. Configure on grafana.com
+- First need register an account from grafana.com to get UID
+- Open http://125.212.225.201:9999	with default admin/admin to change password 
+- Configure for Dashboard - Import - import id which register at first step
+- Choose Prometheus 
+Then access to Dashboard
+
+Configure for outsource alarm to monitor (For this case use Telegram)
+- Access Alerting - Alert rules and notifications
+- Choose Contact points - add new contact point
+    - Input Name, contract point type (choose email or telegram or any method for you) 
+    - Save contact points.
+- Choose Notification policies - Edit - Choose default contact point type
+
+2. Configure for telegram
+- Open chat with @userinfobot, run command /start to get telegram user information
+- Open chat with @botfather to setup new bot:
+  /start
+  /newbot
+  input name of bot
+  get token
+  
+Take note for token to access HTTP API (this token will configure t Grafana.com
+- On telegram bot haqq_pw to monitor alarm from validator node
+
+Source: Using URL
+https://github.com/kj89/cosmos_node_monitoring
+https://grafana.com/docs/grafana/latest/alerting/set-up/provision-alerting-resources/
+For grafana URL monitor haqq validator node: http://125.212.225.201:9999/d/rYdddlPWk/haqq-phuongwoo-node-exporter-full?orgId=1&refresh=1m
